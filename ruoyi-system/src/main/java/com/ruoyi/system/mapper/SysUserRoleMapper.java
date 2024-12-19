@@ -12,6 +12,19 @@ import com.ruoyi.system.domain.SysUserRole;
 public interface SysUserRoleMapper
 {
     /**
+     * 同步学生账号
+     * @param createBy
+     * @return
+     */
+    public int syncStuAccount(String createBy);
+
+    /**
+     * 同步教师账号
+     * @param createBy
+     * @return
+     */
+    public int syncTeaAccount(String createBy);
+    /**
      * 通过用户ID删除用户和角色关联
      * 
      * @param userId 用户ID

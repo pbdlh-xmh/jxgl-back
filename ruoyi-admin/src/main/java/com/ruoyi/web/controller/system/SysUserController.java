@@ -54,6 +54,26 @@ public class SysUserController extends BaseController
     private ISysPostService postService;
 
     /**
+     * 同步学生账号
+     */
+    @PreAuthorize("@ss.hasPermi('system:user:stu')")
+    @GetMapping("/sysStu")
+    public AjaxResult sysStu(SysUser user)
+    {
+        int n = userService.syncStuAccount(this.getLoginUser().getUser());
+        return AjaxResult.success(n);
+    }
+    /**
+     * 同步教师账号
+     */
+    @PreAuthorize("@ss.hasPermi('system:user:tea')")
+    @GetMapping("/sysTea")
+    public AjaxResult sysTea(SysUser user)
+    {
+        int n = userService.syncTeaAccount(this.getLoginUser().getUser());
+        return AjaxResult.success(n);
+    }
+    /**
      * 获取用户列表
      */
     @PreAuthorize("@ss.hasPermi('system:user:list')")

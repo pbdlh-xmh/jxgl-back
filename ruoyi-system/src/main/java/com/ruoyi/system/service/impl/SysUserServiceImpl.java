@@ -65,6 +65,16 @@ public class SysUserServiceImpl implements ISysUserService
     @Autowired
     protected Validator validator;
 
+    @Override
+    public int syncStuAccount(SysUser user) {
+        return userMapper.syncStuAccount(user.getUserName());
+    }
+
+    @Override
+    public int syncTeaAccount(SysUser user) {
+        return userMapper.syncTeaAccount(user.getUserName());
+    }
+
     /**
      * 根据条件分页查询用户列表
      * 

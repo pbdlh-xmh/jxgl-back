@@ -217,5 +217,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  			#{userId}
         </foreach> 
  	</delete>
-	
+	<select id="syncStuAccount" parameterType="String" resultType="java.lang.Integer">
+		call sp_syncStuAccount(#{createBy})
+	</select>
+	<select id="syncTeaAccount" parameterType="String" resultType="java.lang.Integer">
+		call sp_syncTeaAccount(#{createBy})
+	</select>
 </mapper> 

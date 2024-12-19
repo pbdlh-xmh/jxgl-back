@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.jxgl.mapper.JxglTeachingMapper">
+    
+    <resultMap type="JxglTeaching" id="JxglTeachingResult">
+        <result property="sid"    column="sid"    />
+        <result property="cterm"    column="cterm"    />
+        <result property="cno"    column="cno"    />
+        <result property="tno"    column="tno"    />
+        <result property="period"    column="period"    />
+        <result property="isOpen"    column="is_open"    />
+        <result property="isOpenScore"    column="is_open_score"    />
+    </resultMap>
+
+    <sql id="selectJxglTeachingVo">
+        select sid, cterm, cno, tno, period, is_open, is_open_score from jxgl_teaching
+    </sql>
+
+    <select id="selectJxglTeachingList" parameterType="JxglTeaching" resultMap="JxglTeachingResult">
+        <include refid="selectJxglTeachingVo"/>
+        <where>  
+            <if test="cterm != null "> and cterm = #{cterm}</if>
+            <if test="cno != null  and cno != ''"> and cno = #{cno}</if>
+            <if test="tno != null  and tno != ''"> and tno = #{tno}</if>
+            <if test="period != null "> and period = #{period}</if>
+            <if test="isOpen != null "> and is_open = #{isOpen}</if>
+            <if test="isOpenScore != null "> and is_open_score = #{isOpenScore}</if>
+        </where>
+    </select>
+    
+    <select id="selectJxglTeachingBySid" parameterType="Long" resultMap="JxglTeachingResult">
+        <include refid="selectJxglTeachingVo"/>
+        where sid = #{sid}
+    </select>
+
+    <insert id="insertJxglTeaching" parameterType="JxglTeaching" useGeneratedKeys="true" keyProperty="sid">
+        insert into jxgl_teaching
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="cterm != null">cterm,</if>
+            <if test="cno != null and cno != ''">cno,</if>
+            <if test="tno != null">tno,</if>
+            <if test="period != null">period,</if>
+            <if test="isOpen != null">is_open,</if>
+            <if test="isOpenScore != null">is_open_score,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="cterm != null">#{cterm},</if>
+            <if test="cno != null and cno != ''">#{cno},</if>
+            <if test="tno != null">#{tno},</if>
+            <if test="period != null">#{period},</if>
+            <if test="isOpen != null">#{isOpen},</if>
+            <if test="isOpenScore != null">#{isOpenScore},</if>
+         </trim>
+    </insert>
+
+    <update id="updateJxglTeaching" parameterType="JxglTeaching">
+        update jxgl_teaching
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="cterm != null">cterm = #{cterm},</if>
+            <if test="cno != null and cno != ''">cno = #{cno},</if>
+            <if test="tno != null">tno = #{tno},</if>
+            <if test="period != null">period = #{period},</if>
+            <if test="isOpen != null">is_open = #{isOpen},</if>
+            <if test="isOpenScore != null">is_open_score = #{isOpenScore},</if>
+        </trim>
+        where sid = #{sid}
+    </update>
+
+    <delete id="deleteJxglTeachingBySid" parameterType="Long">
+        delete from jxgl_teaching where sid = #{sid}
+    </delete>
+
+    <delete id="deleteJxglTeachingBySids" parameterType="String">
+        delete from jxgl_teaching where sid in 
+        <foreach item="sid" collection="array" open="(" separator="," close=")">
+            #{sid}
+        </foreach>
+    </delete>
+</mapper>

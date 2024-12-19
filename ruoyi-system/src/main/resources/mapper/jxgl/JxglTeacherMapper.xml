@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.jxgl.mapper.JxglTeacherMapper">
+    
+    <resultMap type="JxglTeacher" id="JxglTeacherResult">
+        <result property="tno"    column="tno"    />
+        <result property="tname"    column="tname"    />
+        <result property="ps"    column="ps"    />
+        <result property="tbirthday"    column="tbirthday"    />
+        <result property="tdept"    column="tdept"    />
+        <result property="tsex"    column="tsex"    />
+    </resultMap>
+
+    <sql id="selectJxglTeacherVo">
+        select tno, tname, ps, tbirthday, tdept, tsex from jxgl_teacher
+    </sql>
+
+    <select id="selectJxglTeacherList" parameterType="JxglTeacher" resultMap="JxglTeacherResult">
+        <include refid="selectJxglTeacherVo"/>
+        <where>  
+            <if test="tname != null  and tname != ''"> and tname like concat('%', #{tname}, '%')</if>
+            <if test="ps != null  and ps != ''"> and ps = #{ps}</if>
+            <if test="tbirthday != null "> and tbirthday = #{tbirthday}</if>
+            <if test="tdept != null  and tdept != ''"> and tdept = #{tdept}</if>
+            <if test="tsex != null  and tsex != ''"> and tsex = #{tsex}</if>
+        </where>
+    </select>
+    
+    <select id="selectJxglTeacherByTno" parameterType="String" resultMap="JxglTeacherResult">
+        <include refid="selectJxglTeacherVo"/>
+        where tno = #{tno}
+    </select>
+
+    <insert id="insertJxglTeacher" parameterType="JxglTeacher">
+        insert into jxgl_teacher
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="tno != null">tno,</if>
+            <if test="tname != null">tname,</if>
+            <if test="ps != null">ps,</if>
+            <if test="tbirthday != null">tbirthday,</if>
+            <if test="tdept != null">tdept,</if>
+            <if test="tsex != null">tsex,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="tno != null">#{tno},</if>
+            <if test="tname != null">#{tname},</if>
+            <if test="ps != null">#{ps},</if>
+            <if test="tbirthday != null">#{tbirthday},</if>
+            <if test="tdept != null">#{tdept},</if>
+            <if test="tsex != null">#{tsex},</if>
+         </trim>
+    </insert>
+
+    <update id="updateJxglTeacher" parameterType="JxglTeacher">
+        update jxgl_teacher
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="tname != null">tname = #{tname},</if>
+            <if test="ps != null">ps = #{ps},</if>
+            <if test="tbirthday != null">tbirthday = #{tbirthday},</if>
+            <if test="tdept != null">tdept = #{tdept},</if>
+            <if test="tsex != null">tsex = #{tsex},</if>
+        </trim>
+        where tno = #{tno}
+    </update>
+
+    <delete id="deleteJxglTeacherByTno" parameterType="String">
+        delete from jxgl_teacher where tno = #{tno}
+    </delete>
+
+    <delete id="deleteJxglTeacherByTnos" parameterType="String">
+        delete from jxgl_teacher where tno in 
+        <foreach item="tno" collection="array" open="(" separator="," close=")">
+            #{tno}
+        </foreach>
+    </delete>
+</mapper>

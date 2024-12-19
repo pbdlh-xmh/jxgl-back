@@ -87,11 +87,24 @@ export const constantRoutes = [
         meta: { title: '个人中心', icon: 'user' }
       }
     ]
-  }
+  },
 ]
 
 // 动态路由，基于用户权限动态去加载
 export const dynamicRoutes = [
+  {
+    path:'/jxgl/v-teaching',//代表虚路由地址
+    component:Layout,
+    hidden:true,
+    permissions:['jxgl:member:list'],
+    children:[ 
+      {path:'member/:tid(\\d+)',//member是子路由,:tid代表路由参数(\\d)为正则表达式代表参数一个整数
+        component:()=>import('@/views/jxgl/teaching/member'),//该路由加载的组件路径
+        name:'MemberMgr'+'_'+Math.round(Math.random()*10000,0),//路由名称
+        meta:{title:'班级成员管理'}//meta代表路由附加信息，title代表标签名称}]},
+    }
+  ]
+  },
   {
     path: '/system/user-auth',
     component: Layout,

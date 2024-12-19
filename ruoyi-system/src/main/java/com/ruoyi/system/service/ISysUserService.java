@@ -10,6 +10,15 @@ import com.ruoyi.common.core.domain.entity.SysUser;
  */
 public interface ISysUserService
 {
+
+    /**
+     * 同步学生账号
+     */
+    public int  syncStuAccount(SysUser user) ;
+    /**
+     * 同步教师账号
+     */
+    public int  syncTeaAccount(SysUser user) ;
     /**
      * 根据条件分页查询用户列表
      * 
@@ -203,4 +212,5 @@ public interface ISysUserService
      * @return 结果
      */
     public String importUser(List<SysUser> userList, Boolean isUpdateSupport, String operName);
+
 }

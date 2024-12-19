@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.jxgl.mapper.JxglScMapper">
+    <resultMap type="JxglScView" id="JxglScViewResult">
+        <result property="tid" column="tid"/>
+        <result property="sno" column="sno"/>
+        <result property="sname" column="sname"/>
+        <result property="sclass" column="sclass"/>
+        <result property="ssex" column="ssex"/>
+        <result property="cno" column="cno"/>
+        <result property="cname" column="cname"/>
+        <result property="score" column="score"/>
+        <result property="point" column="point"/>
+    </resultMap>
+
+    <sql id="selectJxglScView">
+        select sc.tid, s.sno,s.sname,s.sclass,s.ssex,c.cno,c.cname,sc.score,sc.point
+        from jxgl_sc sc join jxgl_student s on sc.sno = s.sno
+        join jxgl_course c on sc.cno=c.cno
+    </sql>
+
+    <select id="selectJxglScViewList" parameterType="Map" resultMap="JxglScViewResult">
+        <include refid="selectJxglScView"/>
+        <where>
+            <if test="tid!=null">tid=#{tid}</if>
+            <if test="sname != null  and sname != ''">and s.sname like concat('%', #{sname}, '%')</if>
+        </where>
+    </select>
+
+    <update id="updateJxglSc" parameterType="Map">
+        update jxgl_sc
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="sno!=null">sno=#{sno},</if>
+            <if test="tid!=null">tid=#{tid},</if>
+            <if test="cno!=null">cno=#{cno},</if>
+            <if test="score!=null">score=#{score},</if>
+            <if test="point!=null">point=#{point},</if>
+        </trim>
+        where id=#{id}
+    </update>
+    <insert id="insertJxglSc" parameterType="JxglScView">insert into jxgl_sc
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sno!=null">sno,</if>
+            <if test="tid!=null">tid,
+            </if>
+            <if test="cno!=null">cno,
+            </if>
+            <if test="score!=null">score,</if>
+            <if test="point!=null">point,</if>
+        </trim>
+        <trim prefix="values('suffix=')" suffixOverrides=",">
+            <if test="sno!=null">#{sno},</if>
+            <if test="tid!=null">#{tid},</if>
+            <if test="cno!=null">#{cno},</if>
+            <if test="score!=null">#{score},</if>
+            <if test="point!=null">#{point},</if>
+        </trim>
+    </insert>
+    <delete id="deleteJxglSc" parameterType="Map">deletefromjxgl_scwheresno=#{sno}andtid=#{tid}</delete>
+    <select id="selectJxglMyScList" parameterType="Map" resultType="Map">
+        SELECT sc.*,s.sname,s.sclass,c.cname,t.cterm,t.period,t.is_open,t.is_open_score,t2.tno,t2.tname,t2.ps
+        from jxgl_sc sc
+        join jxgl_student s on sc.sno=s.sno
+        join jxgl_course c on sc.cno=c.cno
+        join jxgl_teaching t on t.sid=sc.tid
+        join jxgl_teacher t2 on t.tno=t2.tno
+        <where>
+            <if test="sno!=null">and sc.sno=#{sno}
+            </if>
+            <if test="cterm!=null">and t.cterm=#{cterm}
+            </if>
+            <if test="cname!=nullandcname!=''">and c.cname like concat('%',#{cname},'%')
+            </if>
+        </where>
+    </select>
+</mapper>

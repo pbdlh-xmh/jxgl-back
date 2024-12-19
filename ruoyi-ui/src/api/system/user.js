@@ -134,3 +134,17 @@ export function deptTreeSelect() {
     method: 'get'
   })
 }
+//同步学生账号
+export function syncStuAccount(){
+  return request({
+    url:'/system/user/sysStu',
+    method:'get'
+  })
+}
+//同步教师账号
+export function syncTeaAccount(){
+  return request({
+    url:'/system/user/sysTea',
+    method:'get'
+  })
+}

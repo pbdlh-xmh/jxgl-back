@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.jxgl.mapper.JxglCourseMapper">
+    
+    <resultMap type="JxglCourse" id="JxglCourseResult">
+        <result property="cno"    column="cno"    />
+        <result property="cname"    column="cname"    />
+        <result property="cpno"    column="cpno"    />
+        <result property="ccredit"    column="ccredit"    />
+    </resultMap>
+
+    <sql id="selectJxglCourseVo">
+        select cno, cname, cpno, ccredit from jxgl_course
+    </sql>
+
+    <select id="selectJxglCourseList" parameterType="JxglCourse" resultMap="JxglCourseResult">
+        <include refid="selectJxglCourseVo"/>
+        <where>  
+            <if test="cname != null  and cname != ''"> and cname like concat('%', #{cname}, '%')</if>
+            <if test="cpno != null  and cpno != ''"> and cpno = #{cpno}</if>
+            <if test="ccredit != null "> and ccredit = #{ccredit}</if>
+        </where>
+    </select>
+    
+    <select id="selectJxglCourseByCno" parameterType="String" resultMap="JxglCourseResult">
+        <include refid="selectJxglCourseVo"/>
+        where cno = #{cno}
+    </select>
+
+    <insert id="insertJxglCourse" parameterType="JxglCourse">
+        insert into jxgl_course
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="cno != null">cno,</if>
+            <if test="cname != null and cname != ''">cname,</if>
+            <if test="cpno != null">cpno,</if>
+            <if test="ccredit != null">ccredit,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="cno != null">#{cno},</if>
+            <if test="cname != null and cname != ''">#{cname},</if>
+            <if test="cpno != null">#{cpno},</if>
+            <if test="ccredit != null">#{ccredit},</if>
+         </trim>
+    </insert>
+
+    <update id="updateJxglCourse" parameterType="JxglCourse">
+        update jxgl_course
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="cname != null and cname != ''">cname = #{cname},</if>
+            <if test="cpno != null">cpno = #{cpno},</if>
+            <if test="ccredit != null">ccredit = #{ccredit},</if>
+        </trim>
+        where cno = #{cno}
+    </update>
+
+    <delete id="deleteJxglCourseByCno" parameterType="String">
+        delete from jxgl_course where cno = #{cno}
+    </delete>
+
+    <delete id="deleteJxglCourseByCnos" parameterType="String">
+        delete from jxgl_course where cno in 
+        <foreach item="cno" collection="array" open="(" separator="," close=")">
+            #{cno}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.jxgl.mapper.JxglTeachingViewMapper">
+
+    <resultMap type="JxglTeachingView" id="JxglTeachingViewResult">
+        <result property="sid" column="sid"/>
+        <result property="cterm" column="cterm"/>
+        <result property="cno" column="cno"/>
+        <result property="cname" column="cname"/>
+        <result property="period" column="period"/>
+        <result property="tno" column="tno"/>
+        <result property="tname" column="tname"/>
+        <result property="ps" column="ps"/>
+        <result property="scStatus" column="sc_status"/>
+        <result property="isOpen" column="is_open"/>
+        <result property="isOpenScore" column="is_open_score"/>
+    </resultMap>
+
+    <sql id="selectJxglTeachingViewVo">
+        SELECT a.sid,a.cterm,c.cno,c.cname,a.period,t.tno,t.tname,t.ps,a.is_open,a.is_open_score FROM `jxgl_teaching` a
+        join jxgl_course c on a.cno=c.cno
+        join jxgl_teacher t on t.tno=a.tno
+
+    </sql>
+
+    <select id="selectJxglTeachingViewList" parameterType="JxglTeachingView" resultMap="JxglTeachingViewResult">
+        <include refid="selectJxglTeachingViewVo"/>
+        <where>
+            <if test="cterm != null ">and a.cterm = #{cterm}</if>
+            <if test="cname != null  and cname != ''">and c.cname like concat('%', #{cname}, '%')</if>
+            <if test="tname != null  and tname != ''">and t.tname like concat('%', #{tname}, '%')</if>
+            <if test="ps != null  and ps != ''">and t.ps = #{ps}</if>
+            <if test="tno != null and tno != ''">and t.tno = #{tno}</if>
+            <if test="isOpen != null">and a.is_open = #{isOpen}</if>
+            <if test="isOpenScore != null">and a.is_open_score = #{isOpenScore}</if>
+        </where>
+    </select>
+
+    <select id="selectJxglTeachingViewBySid" parameterType="Long" resultMap="JxglTeachingViewResult">
+        <include refid="selectJxglTeachingViewVo"/>
+        where a.sid = #{sid}
+    </select>
+
+    <select id="selectJxglMyScTeachingList" parameterType="Map" resultMap="JxglTeachingViewResult">
+        SELECT t.sid,t.cterm,t.cno,c.cname,t.period,t.tno,t2.tname,t2.ps,
+        (1-isnull(sc.tid)) as sc_status
+        from jxgl_teaching t join jxgl_course c on t.cno=c.cno
+        join jxgl_teacher t2 on t2.tno=t.tno
+        left join jxgl_sc sc on sc.tid=t.sid and sc.sno=#{sno}
+        <where>
+            t.is_open=1
+            <if test="cterm!=null">and t.cterm=#{cterm}</if>
+            <if test="cname!=nullandcname!=''">and c.cname like concat('%',#{cname},'%')
+            </if
+            >
+            <if test="scStatus!=null">and(1-isnull(sc.tid))=#{scStatus}</if>
+        </where>
+        ORDER BY t.cterm desc,t.cno
+    </select>
+    <select id="selectJxglScTeachingList" parameterType="Map" resultType="Map">
+        SELECT sc.*,s.sname,s.sclass,c.cname,t.cterm,t.period,t.is_open,t.is_open_score,t2.tno,t2.tname,t2.ps
+        from jxgl_sc sc
+        join jxgl_student s on sc.sno=s.sno
+        join jxgl_course c on sc.cno=c.cno
+        left join jxgl_teaching t on t.sid=sc.tid
+        left join jxgl_teacher t2 on t.tno=t2.tno
+        <where>
+            <if test="cterm!=null">and t.cterm=#{cterm}
+            </if>
+            <if test="cname!=null and cname!=''">and c.cname like concat('%',#{cname},'%')
+            </if>
+            <if test="tname!=null and tname!=''">and t2.tname like concat('%',#{tname},'%')
+            </if>
+            <if test="sno!=null and sno!=''">and s.sno=#{sno}</if>
+            <if test="sname !=null and sname!=''">and s.sname like concat('%',#{sname},'%')</if>
+        </where>
+        ORDER BY t.cterm desc,t.cno
+    </select>
+
+    <select id="selectJxglScTermByCno" parameterType="String" resultType="Map">
+        SELECT distinct t.sid,t.cterm,t.period,t2.tname
+        from jxgl_teaching t
+        join jxgl_teacher t2 on t.tno=t2.tno
+        <where>
+            <if test="cno!=nullandcno!=''">t.cno=#{cno}
+            </if>
+        </where>
+        ORDER BY t.cterm desc,t.period
+    </select>
+</mapper>

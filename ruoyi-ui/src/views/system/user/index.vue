@@ -132,6 +132,26 @@
               @click="handleExport"
               v-hasPermi="['system:user:export']"
             >导出</el-button>
+          </el-col>  
+          <el-col :span="1.5">
+            <el-button
+              type="info"
+              plain
+              icon="el-icon-refresh"
+              size="mini"
+              @click="handleSyncStu"
+              v-hasPermi="['system:user:stu']"
+            >同步学生</el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button
+              type="info"
+              plain
+              icon="el-icon-refresh"
+              size="mini"
+              @click="handleSyncTea"
+              v-hasPermi="['system:user:tea']"
+            >同步教师</el-button>
           </el-col>
           <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
         </el-row>
@@ -341,7 +361,7 @@
 </template>
 
 <script>
-import { listUser, getUser, delUser, addUser, updateUser, resetUserPwd, changeUserStatus, deptTreeSelect } from "@/api/system/user";
+import { listUser, getUser, delUser, addUser, updateUser, resetUserPwd, changeUserStatus, deptTreeSelect ,syncStuAccount,syncTeaAccount} from "@/api/system/user";
 import { getToken } from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
@@ -670,6 +690,18 @@ export default {
     // 提交上传文件
     submitFileForm() {
       this.$refs.upload.submit();
+    },
+    //同步学生
+    handleSyncStu(){
+      syncStuAccount().then(response=>{
+        this.$modal.msgSuccess("已成同步学生用户数据"+response.data+"条！");
+      })
+    },
+    //同步教师
+    handleSyncTea(){
+      syncTeaAccount().then(response=>{
+        this.$modal.msgSuccess("已成同步教师用户数据"+response.data+"条！");
+      })
     }
   }
 };

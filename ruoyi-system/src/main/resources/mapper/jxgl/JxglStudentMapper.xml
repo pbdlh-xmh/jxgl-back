@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.jxgl.mapper.JxglStudentMapper">
+
+    <resultMap type="JxglStudent" id="JxglStudentResult">
+        <result property="sno" column="sno"/>
+        <result property="sname" column="sname"/>
+        <result property="sclass" column="sclass"/>
+        <result property="ssex" column="ssex"/>
+        <result property="bday" column="bday"/>
+        <result property="bplace" column="bplace"/>
+        <result property="IDNum" column="IDNum"/>
+        <result property="sdept" column="sdept"/>
+        <result property="phone" column="phone"/>
+    </resultMap>
+
+    <sql id="selectJxglStudentVo">
+        select sno, sname, sclass, ssex, bday, bplace, IDNum, sdept, phone from jxgl_student
+    </sql>
+
+    <select id="selectJxglStudentList" parameterType="JxglStudent" resultMap="JxglStudentResult">
+        <include refid="selectJxglStudentVo"/>
+        <where>
+            <if test="sname != null  and sname != ''">and sname like concat('%', #{sname}, '%')</if>
+            <if test="sclass != null  and sclass != ''">and sclass = #{sclass}</if>
+        </where>
+    </select>
+
+    <select id="selectJxglStudentBySno" parameterType="String" resultMap="JxglStudentResult">
+        <include refid="selectJxglStudentVo"/>
+        where sno = #{sno}
+    </select>
+
+    <insert id="insertJxglStudent" parameterType="JxglStudent">
+        insert into jxgl_student
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sno != null">sno,</if>
+            <if test="sname != null and sname != ''">sname,</if>
+            <if test="sclass != null">sclass,</if>
+            <if test="ssex != null">ssex,</if>
+            <if test="bday != null">bday,</if>
+            <if test="bplace != null">bplace,</if>
+            <if test="IDNum != null">IDNum,</if>
+            <if test="sdept != null">sdept,</if>
+            <if test="phone != null">phone,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="sno != null">#{sno},</if>
+            <if test="sname != null and sname != ''">#{sname},</if>
+            <if test="sclass != null">#{sclass},</if>
+            <if test="ssex != null">#{ssex},</if>
+            <if test="bday != null">#{bday},</if>
+            <if test="bplace != null">#{bplace},</if>
+            <if test="IDNum != null">#{IDNum},</if>
+            <if test="sdept != null">#{sdept},</if>
+            <if test="phone != null">#{phone},</if>
+        </trim>
+    </insert>
+
+    <update id="updateJxglStudent" parameterType="JxglStudent">
+        update jxgl_student
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="sname != null and sname != ''">sname = #{sname},</if>
+            <if test="sclass != null">sclass = #{sclass},</if>
+            <if test="ssex != null">ssex = #{ssex},</if>
+            <if test="bday != null">bday = #{bday},</if>
+            <if test="bplace != null">bplace = #{bplace},</if>
+            <if test="IDNum != null">IDNum = #{IDNum},</if>
+            <if test="sdept != null">sdept = #{sdept},</if>
+            <if test="phone != null">phone = #{phone},</if>
+        </trim>
+        where sno = #{sno}
+    </update>
+
+    <delete id="deleteJxglStudentBySno" parameterType="String">
+        delete from jxgl_student where sno = #{sno}
+    </delete>
+
+    <delete id="deleteJxglStudentBySnos" parameterType="String">
+        delete from jxgl_student where sno in
+        <foreach item="sno" collection="array" open="(" separator="," close=")">
+            #{sno}
+        </foreach>
+    </delete>
+
+    <select id="selectJxglStudentLikeList" parameterType="String" resultType="Map">
+        SELECT sno,sname,sclass
+        from jxgl_student
+        <where>
+            <if test="sno!=null and sno!=''">or sno like concat('%',#{key},'%')
+            </if>
+            <if test="sname!=null and sname!=''">or sname like concat('%',#{key},'%')
+            </if>
+        </where>
+        order by sno
+    </select>
+</mapper>

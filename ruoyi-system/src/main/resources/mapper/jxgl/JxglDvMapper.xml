@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.jxgl.mapper.JxglDvMapper">
+    <resultMap id="JxglDvSummerResult" type="JxglDvSummer">
+        <result property="stu_num" column="stu_num"/>
+        <result property="teachter_num" column="teachter_num"/>
+        <result property="coure_num" column="coure_num"/>
+        <result property="teaching_num" column="teaching_num"/>
+    </resultMap>
+
+    <resultMap id="JxglDvSdeptParcentRseult" type="JxglDvSdeptParcent">
+        <result property="sdept" column="sdept"/>
+        <result property="percent" column="percent"/>
+    </resultMap>
+    <resultMap id="JxglDvCtermScNumRseult" type="JxglDvCtermScNum">
+        <result property="cterm" column="cterm"/>
+        <result property="tnum" column="num"/>
+    </resultMap>
+
+    <resultMap id="JxglDvAeParcentResult" type="JxglDvAePrecent">
+        <result property="snum" column="snum"/>
+        <result property="num" column="num"/>
+        <result property="cnum" column="cnum"/>
+        <result property="tcr" column="tcr"/>
+        <result property="scr" column="scr"/>
+    </resultMap>
+
+    <resultMap id="JxglDvTeachingParcentResult" type="JxglDvTeachingParcent">
+        <result property="tno" column="tno"/>
+        <result property="tname" column="tname"/>
+        <result property="gzl" column="gzl"/>
+    </resultMap>
+
+    <select id="selectJxglDvSummerList" resultMap="JxglDvSummerResult">
+        SELECT(SELECT count(*) as num from jxgl_student)as stu_num,(SELECT count(*) as num
+        from jxgl_teacher)as teachter_num,(SELECT count(*)as num from jxgl_course)as coure_num,
+        (SELECT count(*) as num from jxgl_teaching)as teaching_num;
+    </select>
+    <select id="selectJxglDvSdeptParcentList" resultMap="JxglDvSdeptParcentRseult">
+        SELECT sdept,round(count(*)*100/(select count(*) from jxgl_student),2) as percent from jxgl_student GROUP BY
+        sdept
+    </select>
+    <select id="selectJxglDvCtermScNumList" parameterType="Map" resultMap="JxglDvCtermScNumRseult">
+        SELECT cterm,count(*) as num from jxgl_teaching
+        <where>
+            <if test="beginTerm != null">and cterm >= #{beginTerm}</if>
+            <if test="endTerm != null">and cterm &lt;= #{endTerm}</if>
+        </where>
+        GROUP BY cterm
+    </select>
+
+    <select id="selectJxglDvTeachingParcentList" resultMap="JxglDvTeachingParcentResult">
+        SELECT t2.tno,t.tname,sum(period)as gzl from jxgl_teaching t2 join jxgl_teacher t on t2.tno = t.tno GROUP BY
+        t2.tno,t.tname ORDER BY gzl desc
+
+    </select>
+
+    <select id="selectJxglDvAeParcentList" parameterType="Map" resultMap="JxglDvAeParcentResult">
+        SELECT(SELECT count(DISTINCT sno)from jxgl_sc sc join jxgl_teaching t on sc.tid=t.sid where t.cterm=#{cterm})as
+        snum,(SELECT count(*) from jxgl_teacher)as tnum,(SELECT count(*)from jxgl_teaching where cterm=#{cterm}) as
+        cnum,round((SELECT count(*) from jxgl_teaching where cterm=#{cterm})/(SELECT count(*)from jxgl_teacher),2)as
+        tcr,round((SELECT count(DISTINCT sno)from jxgl_sc sc join jxgl_teaching t on sc.tid=t.sid where
+        t.cterm=#{cterm})/(SELECT count(*)from jxgl_teaching
+        where cterm=#{cterm}),2)as scr
+    </select>
+
+    <select id="selectJxglDvTheTermInfoList" resultType="java.util.HashMap">
+        call sp_dv_cterm(#{theTerm})
+    </select>
+    <select id="selectJxglStudentPointList" resultType="java.util.HashMap">
+        SELECT sc.sno,s.sname,s.sclass,sum(point) as spoint from jxgl_sc sc join jxgl_student s on sc.sno=s.sno GROUP BY
+        sc.sno,s.sname,s.sclass ORDER BY sum(point) desc limit 10
+
+    </select>
+
+</mapper>
