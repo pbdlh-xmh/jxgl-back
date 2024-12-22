@@ -76,9 +76,8 @@
 			<div class="leftMain_middle">
 				<div class="leftMain_middle_left">
 					<div class="leftMain_middle_leftIn">
-						<h3>学生年级分布</h3>
+						<h3>课程开课频率</h3>
 						<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-				
 						<div class="biaoge" style="width:100%; height:25vh" id="chartmain"></div>
 						<span class="border_bg_leftTop"></span>
 						<span class="border_bg_rightTop"></span>
@@ -92,7 +91,7 @@
 				</div>
 				<div class="leftMain_middle_right">
 					<div class="leftMain_middle_rightIn">
-						<h3>教学任务完成率</h3>
+						<h3>异常课程统计</h3>
 						<div class="biaoge biaoge_pai" style="width:100%; height:25vh">
 							<div class="biaoge_paiIn">
 								<ul id="gzlTop5Box"></ul>
@@ -108,12 +107,7 @@
 			<div class="leftMain_middle">
 				<div class="leftMain_middle_left">
 					<div class="leftMain_middle_leftIn">
-						<h3>学期挂科率</h3>
-						<div class="conditions">
-							<button style="color: white; border: solid 1px white;"> &lt;
-							</button><span id="aeTermLabel" style="color: white;"></span>
-							<button style="color: white; border: solid 1px white;"> &gt;</button>
-						</div>
+						<h3>成绩分布</h3>
 						<div class="biaoge" style="width:100%; height:25vh" id="chartmain_zhe"></div>
 						<span class="border_bg_leftTop"></span>
 						<span class="border_bg_rightTop"></span>
@@ -176,7 +170,7 @@
 		<div class="rightMain">
 			<div class="rightMain_top">
 				<div class="rightMain_topIn">
-					<h3>教师职称占比</h3>
+					<h3>课程种类</h3>
 					<div class="biaoge" style="width:100%; height:30vh" id="chartmain_bing"></div>
 					<span class="border_bg_leftTop"></span>
 					<span class="border_bg_rightTop"></span>
@@ -186,17 +180,18 @@
 			</div>
 			<div class="rightMain_bottom">
 				<div class="rightMain_bottomIn">
-					<h3>教学任务量排名前20</h3>
+					<h3>成绩排名前50</h3>
 					<div class="biaoge biaoge_list" style="width:100%; height:36vh">
 						<div class="biaoge_listIn">
 							<ul class="ul_title">
 								<li>排序</li>
-								<li>教师编号</li>
-								<li>教师姓名</li>
-								<li>工作量</li>
+								<li>学号</li>
+								<li>姓名</li>
+								<li>班级</li>
+								<li>总绩点</li>
 							</ul>
 							<div class="ul_list">
-								<div id="workTop20Box" class="ul_listIn"></div>
+								<div id="pointTop50Box" class="ul_listIn"></div>
 							</div>
 						</div>
 
@@ -244,14 +239,14 @@
 				$(".shu4").numScroll();
 			}
 		}
-		//教师职称占比
+		//呈现课程种类
 		function renderDeptParcent() {
 
 			var lengendData = [], seriesData = [];
 			if (dv.deptParcentData && dv.deptParcentData.length > 0) {
 				dv.deptParcentData.forEach(it => {
-					lengendData.push(it.ps);
-					seriesData.push({ name: it.ps, value: it.count })
+					lengendData.push(it.cname);
+					seriesData.push({ name: it.cname, value: it.count })
 				});
 			}
 			option = {
@@ -318,10 +313,9 @@
 			var seasons = ['春', '秋'];
 			return Math.floor(trem / 10) + seasons[trem % 10]
 		}
-
 		function renderTermScNum(endIndex) {
 			// 定义默认显示的条数
-			var defaultNum = 14;
+			var defaultNum = 10;
 
 			if (dv.scNumData && dv.scNumData.length > 0) {
 				// 设置数据的起始和结束索引
@@ -329,20 +323,20 @@
 				dv.scEndTermIndex = endIndex;
 
 				// 准备数据
-				var dataAxis = []; // X 轴的班级名称
-				var data = [];     // Y 轴的班级人数
+				var dataAxis = []; // X 轴的课程名称
+				var data = [];     // Y 轴的开课次数
 				var yMax = 0;      // Y 轴最大值
 				var dataShadow = [];// 阴影背景数据
 
 				for (var i = dv.scBeginTermIndex; i <= dv.scEndTermIndex; i++) {
-					// 如果班级名称为空，用“未知班级”填充
-					var className = dv.scNumData[i].sclass || '未知班级';
-					dataAxis.push(className);
-					data.push(dv.scNumData[i].count);
+					// 如果课程名称为空，用“未知课程”填充
+					var courseName = dv.scNumData[i].cname || '未知课程';
+					dataAxis.push(courseName);
+					data.push(dv.scNumData[i].open_times);
 
 					// 更新 Y 轴最大值
-					if (dv.scNumData[i].count > yMax) {
-						yMax = dv.scNumData[i].count;
+					if (dv.scNumData[i].open_times > yMax) {
+						yMax = dv.scNumData[i].open_times;
 					}
 				}
 
@@ -370,7 +364,7 @@
 						data: dataAxis,
 						axisLabel: {
 							interval: 0,
-							rotate: 45, // 如果班级名称较长，标签旋转 45 度
+							rotate: 45, // 如果课程名称较长，标签旋转 45 度
 							textStyle: {
 								color: '#fff',
 								fontSize: 12
@@ -391,7 +385,7 @@
 					},
 					yAxis: {
 						type: 'value',
-						name: '人数',
+						name: '开课次数',
 						axisLine: {
 							show: true,
 							symbol: ['none', 'arrow'],
@@ -455,6 +449,7 @@
 					]
 				};
 
+
 				//获取dom容器
 				var myChart = echarts.init(document.getElementById('chartmain'));
 				// 使用刚指定的配置项和数据显示图表。
@@ -462,119 +457,94 @@
 				$("#scTermLabel").text(termFormat(dv.scNumData[dv.scBeginTermIndex].cterm) + "至" + termFormat(dv.scNumData[dv.scEndTermIndex].cterm))
 			}
 		}
-
+		
 		function renderGzlTop5() {
 			// 定义排行榜的模板
-			var theMaxGzl = 1; // 最大的完成率
+			var theMaxFailRate = 1; // 最大的失败率
 			var theWidth = 100; // 百分比宽度
 			var template = '<li><div class="liIn">' +
-				'<div class="liIn_left"><span class="bot"></span><span class="zi">{cno} {cname}</span></div>' +
+				'<div class="liIn_left"><span class="bot"></span><span class="zi">{cname} (学期: {cterm})</span></div>' +
 				'<div class="liIn_line"><div class="line_lineIn" style="width:{theWidth}%;"></div></div>' +
-				'<p class="num">{completion_rate}% ({theWidth}%)</p></div></li>';
+				'<p class="num">{fail_rate}% ({theWidth}%)</p></div></li>';
 			var html = '';
 
 			// 判断是否有数据
 			if (dv.gzlTop5Data && dv.gzlTop5Data.length > 0) {
 				for (var i = 0; i < dv.gzlTop5Data.length; i++) {
 					if (i === 0) {
-						// 取第一项作为最大完成率
-						theMaxGzl = dv.gzlTop5Data[0].completion_rate;
+						// 取第一项作为最大失败率
+						theMaxFailRate = dv.gzlTop5Data[0].fail_rate;
 						theWidth = 100;
 					} else {
 						// 计算每一项的宽度比例
-						theWidth = Math.round(dv.gzlTop5Data[i].completion_rate * 100 / theMaxGzl);
+						theWidth = Math.round(dv.gzlTop5Data[i].fail_rate * 100 / theMaxFailRate);
 					}
 
 					// 替换模板中的占位符
-					var liHtml = template.replace('{cno}', dv.gzlTop5Data[i].course_no);
-					liHtml = liHtml.replace('{cname}', dv.gzlTop5Data[i].course_name);
+					var liHtml = template.replace('{cname}', dv.gzlTop5Data[i].cname);
+					liHtml = liHtml.replace('{cterm}', dv.gzlTop5Data[i].cterm);
 					liHtml = liHtml.replaceAll('{theWidth}', theWidth);
-					liHtml = liHtml.replaceAll('{completion_rate}', dv.gzlTop5Data[i].completion_rate);
+					liHtml = liHtml.replaceAll('{fail_rate}', dv.gzlTop5Data[i].fail_rate.toFixed(2));
 					html += liHtml; // 拼接 HTML
 				}
-				// console.log("html:", html);
+				console.log("html:", html);
 				$('#gzlTop5Box').html(html); // 将 HTML 写入到页面中
 			}
 		}
 
-		//5.呈现AE
 		function renderAePercent(endIndex) {
-			console.log("aePercentData:", dv.aePercentData)
-			var xdata = [];
-			var adata = [];
-			var edata = [];
-			var defaultNum = 10;
-			if (dv.aePercentData && dv.aePercentData.length > 0) {
-				dv.aeBeginTermIndex = endIndex - defaultNum > 0 ? endIndex - defaultNum + 1 : 0;
-				if (dv.aeBeginTermIndex + defaultNum >= dv.aePercentData.length) {
-					dv.aeEndTermIndex = dv.aePercentData.length - 1;
-				}
-				for (var i = dv.aeBeginTermIndex; i <= dv.aeEndTermIndex; i++) {
-					xdata.push(termFormat(dv.aePercentData[i].cterm));
-					adata.push(dv.aePercentData[i].fail_rate);
+			console.log("scoreData:", dv.scoreData);
+
+			// 准备数据
+			var xdata = []; // X轴数据：分数范围
+			var adata = []; // Y轴数据：人数
+
+			if (dv.scoreData && dv.scoreData.length > 0) {
+				for (var i = 0; i < dv.scoreData.length; i++) {
+					xdata.push(dv.scoreData[i].score_range); // 分数范围
+					adata.push(dv.scoreData[i].count);      // 人数
 				}
 			}
-			console.log("")
-			option = {
-				title: {
-					text: ''
-				},
+
+			// 图表配置
+			var option = {
 				tooltip: {
-					trigger: 'axis'
-				},
-				legend: {
-					textStyle: {
-						color: '#fff',
-						fontSize: 12,
-					},
-					right: '400%',
-					data: ['优秀率', '不及格率']
-				},
-				grid: {
-					x: 40,
-					y: 40,
-					x2: 20,
-					y2: 20,
-				},
-				toolbox: {
-					feature: {
-						//saveAsImage: {}
-					}
+					trigger: 'axis',
+					formatter: '{b}<br />人数: {c}'
 				},
 				xAxis: {
 					type: 'category',
-					boundaryGap: false,
+					boundaryGap: true,
 					axisLabel: {
-						/*inside: true,*/
 						interval: 0,
+						rotate: 45, // 旋转 X 轴标签，防止重叠
 						textStyle: {
 							color: '#fff',
 							fontSize: 12
-
 						}
 					},
 					axisTick: {
-						show: false,
+						show: false
 					},
 					axisLine: {
 						show: true,
 						symbol: ['none', 'arrow'],
 						symbolOffset: 12,
 						lineStyle: {
-							color: '#fff',
+							color: '#fff'
 						}
 					},
-					data: xdata
+					data: xdata // X 轴数据
 				},
 				yAxis: {
 					type: 'value',
-
+					name: '人数',
 					axisLine: {
 						show: true,
 						symbol: ['none', 'arrow'],
 						symbolOffset: 12,
 						lineStyle: {
-							color: '#fff',
+							color: '#fff'
 						}
 					},
 					axisTick: {
@@ -589,26 +559,29 @@
 				},
 				series: [
 					{
-						name: '挂科率',
-						type: 'line',
-						stack: '%',
+						name: '人数',
+						type: 'bar',
+						barWidth: '50%',
 						data: adata,
 						itemStyle: {
 							normal: {
-								color: "#0efdff",//折线点的颜色
-								lineStyle: {
-									color: "#0efdff",//折线的颜色
-									width: 2,
-								}
-							},
+								color: new echarts.graphic.LinearGradient(
+									0, 0, 0, 1,
+									[
+										{ offset: 0, color: '#0efdff' },
+										{ offset: 0.5, color: '#188df0' },
+										{ offset: 1, color: '#188df0' }
+									]
+								)
+							}
 						}
-					},
+					}
 				]
 			};
 
 			var myChart = echarts.init(document.getElementById('chartmain_zhe'));
 			myChart.setOption(option);
-			$("#aeTermLabel").text(termFormat(dv.aePercentData[dv.aeBeginTermIndex].cterm) + '至' + termFormat(dv.aePercentData[dv.aeEndTermIndex].cterm));
+			$("#aeTermLabel").text(termFormat(dv.scNumData[dv.scBeginTermIndex].cterm) + '至' + termFormat(dv.scNumData[dv.scEndTermIndex].cterm));
 
 		}
 		//呈现学期运行数据
@@ -626,47 +599,23 @@
 			$(".shu9").numScroll();
 			$(".shu10").numScroll();
 		}
-		//7.教学任务量排名前20
-		// function renderSpointTop50() {
-		// 	var template = '<ul class="ul_con">' + '<li>{no}</li>' + '<li>{sno}</li>' +
-		// 		'<li>{sname}</li>' + '<li>{sclass}</li>' + '<li>{pointSum}</li></ul>';
-		// 	var html = '';
-		// 	if (dv.pointTop50Data && dv.pointTop50Data.length > 0) {
-		// 		for (var i = 0; i < dv.pointTop50Data.length; i++) {
-		// 			var liHtml = template.replace('{no}', i + 1);
-		// 			liHtml = liHtml.replace('{sno}', dv.pointTop50Data[i].sno);
-		// 			liHtml = liHtml.replace('{sname}', dv.pointTop50Data[i].sname);
-		// 			liHtml = liHtml.replace('{sclass}', dv.pointTop50Data[i].sclass);
-		// 			liHtml = liHtml.replace('{pointSum}', dv.pointTop50Data[i].spoint);
-		// 			html += liHtml;
-		// 		}
-		// 		$('#pointTop50Box').html(html);
-		// 	}
-		// }
-
-		function renderWorkTop20() {
-			// 定义渲染模板
-			var template = '<ul class="ul_con">' +
-				'<li>{no}</li>' +
-				'<li>{teacher_no}</li>' +
-				'<li>{teacher_name}</li>' +
-				'<li>{workload}</li>' +
-				'</ul>';
+		//7.呈现成绩排名前50
+		function renderSpointTop50() {
+			var template = '<ul class="ul_con">' + '<li>{no}</li>' + '<li>{sno}</li>' +
+				'<li>{sname}</li>' + '<li>{sclass}</li>' + '<li>{pointSum}</li></ul>';
 			var html = '';
-
-			// 判断是否有数据
-			if (dv.workTop20Data && dv.workTop20Data.length > 0) {
-				for (var i = 0; i < dv.workTop20Data.length; i++) {
-					var liHtml = template.replace('{no}', i + 1); // 排名
-					liHtml = liHtml.replace('{teacher_no}', dv.workTop20Data[i].teacher_no || '无数据'); // 教师编号
-					liHtml = liHtml.replace('{teacher_name}', dv.workTop20Data[i].teacher_name || '无数据'); // 教师姓名
-					liHtml = liHtml.replace('{workload}', dv.workTop20Data[i].workload || '0'); // 工作量
-					html += liHtml; // 拼接 HTML
+			if (dv.pointTop50Data && dv.pointTop50Data.length > 0) {
+				for (var i = 0; i < dv.pointTop50Data.length; i++) {
+					var liHtml = template.replace('{no}', i + 1);
+					liHtml = liHtml.replace('{sno}', dv.pointTop50Data[i].sno);
+					liHtml = liHtml.replace('{sname}', dv.pointTop50Data[i].sname);
+					liHtml = liHtml.replace('{sclass}', dv.pointTop50Data[i].sclass);
+					liHtml = liHtml.replace('{pointSum}', dv.pointTop50Data[i].spoint);
+					html += liHtml;
 				}
-				$('#workTop20Box').html(html); // 渲染到页面
+				$('#pointTop50Box').html(html);
 			}
 		}
-
 		//jquery，ajaix请求
 		function request(url, method, dataObject, scuuessCallback, errorCallback) {
 			var newurl = location.origin + '/dev-api' + url;
@@ -705,28 +654,31 @@
 				//error
 			});
 
-			request('jxgl/dv/ps', null, null, function (response) {
+			request('jxgl/dv/course', null, null, function (response) {
 				//success
 				dv.deptParcentData = response.rows; renderDeptParcent();
 			}, function (e) {//error
 			});
 
-			request('jxgl/dv/sruClass', null, null, function (response) {//success
+			request('jxgl/dv/pinlv', null, null, function (response) {//success
 				dv.scNumData = response.rows; if (dv.scNumData && dv.scNumData.length > 0) { renderTermScNum(dv.scNumData.length - 1); }
 			}, function (e) {//error
 			});
 
-			request('jxgl/dv/work', null, null, function (response) {//success
-				dv.gzlTop5Data = response.rows.sort((a, b) => b.completion_rate - a.completion_rate).slice(0, 5);
+			request('jxgl/dv/errorWork', null, null, function (response) {//success
+				dv.gzlTop5Data = response.rows.sort((a, b) => b.fail_rate - a.fail_rate).slice(0, 5);
 				renderGzlTop5(); // 渲染排行榜
 			}, function (e) { // 失败回调
 				console.error('请求失败：', e);
 			});
 
-			request('jxgl/dv/guake', null, null, function (response) {//success,null
-				dv.aePercentData = response.rows; if (dv.aePercentData && dv.aePercentData.length > 0) { renderAePercent(dv.aePercentData.length - 1); }
-			}, function (e) {
-				// error
+			request('jxgl/dv/score', null, null, function (response) {//success,null
+				dv.scoreData = response.rows;
+				if (dv.scoreData && dv.scoreData.length > 0) {
+					renderAePercent();
+				}
+			}, function (e) { // 失败回调
+				console.error('请求失败：', e);
 			});
 
 			request('jxgl/dv/theTermInfo/' + dv.theTerm, null, null, function (response) {//success
@@ -735,11 +687,9 @@
 				//error
 			});
 
-			request('jxgl/dv/work20', null, null, function (response) {//success
-				dv.workTop20Data = response.rows || []; // 接口返回的数据
-				renderWorkTop20(); // 渲染工作量列表
-			}, function (e) { // 失败回调
-				console.error('请求失败：', e);
+			request('jxgl/dv/stuPoint', null, null, function (response) {//success
+				dv.pointTop50Data = response.rows; renderSpointTop50();
+			}, function (e) {//error
 			});
 		});
 	</script>
