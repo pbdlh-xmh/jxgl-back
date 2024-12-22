@@ -510,7 +510,7 @@
 				}
 				for (var i = dv.aeBeginTermIndex; i <= dv.aeEndTermIndex; i++) {
 					xdata.push(termFormat(dv.aePercentData[i].cterm));
-					adata.push(dv.aePercentData[i].aper); edata.push(dv.aePercentData[i].eper);
+					adata.push(dv.aePercentData[i].fail_rate);
 				}
 			}
 			option = {
@@ -587,7 +587,7 @@
 				},
 				series: [
 					{
-						name: '优秀率',
+						name: '挂科率',
 						type: 'line',
 						stack: '%',
 						data: adata,
@@ -600,12 +600,6 @@
 								}
 							},
 						}
-					},
-					{
-						name: '不及格率',
-						type: 'line',
-						stack: '%',
-						data: edata,
 					},
 				]
 			};
@@ -694,7 +688,7 @@
 			}); request('jxgl/dv/teaching', null, null, function (response) {//success
 				dv.gzlTop5Data = response.data; renderGzlTop5();
 			}, function (e) {//error
-			}); request('jxgl/dv/aeParcent',null,null, function (response) {//success,null
+			}); request('jxgl/dv/guake',null,null, function (response) {//success,null
 				dv.aePercentData = response.rows; if (dv.aePercentData && dv.aePercentData.length > 0) { renderAePercent(dv.aePercentData.length - 1); }
 			}, function (e) {
 				// error

@@ -56,7 +56,7 @@
           prop="cterm"><el-select v-model="formTerm.tid" placeholder="请选择学期" clearablestyle="width:380px"><el-option
               v-for="dict in forTermList" :key="dict.value"
               :label="parseTermString(dict.cterm) + '|' + dict.period + '学时|' + dict.tname"
-              :value="dict.id"></el-option></el-select></el-form-item></el-form>
+              :value="dict.sid"></el-option></el-select></el-form-item></el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确定</el-button><el-button @click="cancel">取消</el-button>
       </div>
@@ -74,9 +74,9 @@
             v-model="form.tid" placeholder="请选择" clearablestyle="width:380px"><el-option
               v-for="dict in openTeachingList" :key="dict.id"
               :label="parseTermString(dict.cterm) + '|' + dict.cno + '' + dict.cname + '' + dict.period + '学时|' + dict.tname + '' + dict.ps"
-              :value="dict.id"></el-option></el-select></el-form-item></el-form>
+              :value="dict.sid"></el-option></el-select></el-form-item></el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确定</el-button><el-button @click="cancel">取消</el-button>
+        <el-button type="primary" @click="submitForm1">确定</el-button><el-button @click="cancel">取消</el-button>
       </div>
     </el-dialog>
   </div>
@@ -120,15 +120,9 @@ export default {
       //当前可选的教学任务
       openTeachingList: [],
       //是否显示编辑学期弹出层
-      openTerm: false,
-      //学生信息
-      stuInfo: '',
-      //课程信息
-      courseInfo: '',
       //学期表单
       formTerm: {},
       //当前可选的教学任务
-      openTeachingList: [],
       //学生查询关键字
       stuKey: null,
       //待选的学生列表
@@ -254,12 +248,6 @@ export default {
       this.multiple = !selection.length
     },
 
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加教学任务";
-    },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
@@ -283,6 +271,12 @@ export default {
             this.openTerm = false;
             this.getList();
           });
+        }
+      });
+    },
+    submitForm1() {
+      this.$refs["form"].validate(valid => {
+        if (valid) {
           addSc(this.form).then(response => {
             this.$modal.msgSuccess("代选成功");
             this.open = false; this.getList();

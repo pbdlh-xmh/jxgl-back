@@ -16,7 +16,7 @@
     </resultMap>
     <resultMap id="JxglDvCtermScNumRseult" type="JxglDvCtermScNum">
         <result property="cterm" column="cterm"/>
-        <result property="tnum" column="num"/>
+        <result property="num" column="num"/>
     </resultMap>
 
     <resultMap id="JxglDvAeParcentResult" type="JxglDvAePrecent">
@@ -34,13 +34,16 @@
     </resultMap>
 
     <select id="selectJxglDvSummerList" resultMap="JxglDvSummerResult">
-        SELECT(SELECT count(*) as num from jxgl_student)as stu_num,(SELECT count(*) as num
-        from jxgl_teacher)as teachter_num,(SELECT count(*)as num from jxgl_course)as coure_num,
-        (SELECT count(*) as num from jxgl_teaching)as teaching_num;
+        SELECT(SELECT count(*) as num from jxgl_student)  as stu_num,
+              (SELECT count(*) as num
+               from jxgl_teacher)                         as teachter_num,
+              (SELECT count(*) as num from jxgl_course)   as coure_num,
+              (SELECT count(*) as num from jxgl_teaching) as teaching_num;
     </select>
     <select id="selectJxglDvSdeptParcentList" resultMap="JxglDvSdeptParcentRseult">
-        SELECT sdept,round(count(*)*100/(select count(*) from jxgl_student),2) as percent from jxgl_student GROUP BY
-        sdept
+        SELECT sdept, round(count(*) * 100 / (select count(*) from jxgl_student), 2) as percent
+        from jxgl_student
+        GROUP BY sdept
     </select>
     <select id="selectJxglDvCtermScNumList" parameterType="Map" resultMap="JxglDvCtermScNumRseult">
         SELECT cterm,count(*) as num from jxgl_teaching
@@ -52,27 +55,176 @@
     </select>
 
     <select id="selectJxglDvTeachingParcentList" resultMap="JxglDvTeachingParcentResult">
-        SELECT t2.tno,t.tname,sum(period)as gzl from jxgl_teaching t2 join jxgl_teacher t on t2.tno = t.tno GROUP BY
-        t2.tno,t.tname ORDER BY gzl desc
+        SELECT t2.tno, t.tname, sum(period) as gzl
+        from jxgl_teaching t2
+                 join jxgl_teacher t on t2.tno = t.tno
+        GROUP BY t2.tno, t.tname
+        ORDER BY gzl desc
+        limit 5
 
     </select>
 
-    <select id="selectJxglDvAeParcentList" parameterType="Map" resultMap="JxglDvAeParcentResult">
-        SELECT(SELECT count(DISTINCT sno)from jxgl_sc sc join jxgl_teaching t on sc.tid=t.sid where t.cterm=#{cterm})as
-        snum,(SELECT count(*) from jxgl_teacher)as tnum,(SELECT count(*)from jxgl_teaching where cterm=#{cterm}) as
-        cnum,round((SELECT count(*) from jxgl_teaching where cterm=#{cterm})/(SELECT count(*)from jxgl_teacher),2)as
-        tcr,round((SELECT count(DISTINCT sno)from jxgl_sc sc join jxgl_teaching t on sc.tid=t.sid where
-        t.cterm=#{cterm})/(SELECT count(*)from jxgl_teaching
-        where cterm=#{cterm}),2)as scr
+    <select id="selectJxglDvAeParcentList" resultType="java.util.HashMap">
+        SELECT l.cterm,
+               COUNT(CASE WHEN l.score &lt; 60 THEN 1 END) * 1.0 / NULLIF(COUNT(l.score), 0) AS eper,
+               COUNT(CASE WHEN h.score > 85 THEN 1 END) * 1.0 / NULLIF(COUNT(h.score), 0)    AS aper
+        FROM (SELECT cterm,
+                     score
+              FROM jxgl_sc sc
+                       JOIN jxgl_teaching t ON sc.cno = t.cno
+              WHERE score IS NOT NULL) AS l
+                 LEFT JOIN (SELECT cterm,
+                                   score
+                            FROM jxgl_sc sc
+                                     JOIN jxgl_teaching t ON sc.cno = t.cno
+                            WHERE score IS NOT NULL) AS h ON l.cterm = h.cterm
+        GROUP BY l.cterm
+        ORDER BY l.cterm;
+
     </select>
 
     <select id="selectJxglDvTheTermInfoList" resultType="java.util.HashMap">
         call sp_dv_cterm(#{theTerm})
     </select>
     <select id="selectJxglStudentPointList" resultType="java.util.HashMap">
-        SELECT sc.sno,s.sname,s.sclass,sum(point) as spoint from jxgl_sc sc join jxgl_student s on sc.sno=s.sno GROUP BY
-        sc.sno,s.sname,s.sclass ORDER BY sum(point) desc limit 10
+        SELECT sc.sno, s.sname, s.sclass, sum(point) as spoint
+        from jxgl_sc sc
+                 join jxgl_student s on sc.sno = s.sno
+        GROUP BY sc.sno, s.sname, s.sclass
+        ORDER BY sum(point) desc
+        limit 10
 
+    </select>
+<!--    自选大屏sql -->
+    <!-- ##教师职称比例（饼图）  -->
+    <select id="selectJxglPsList" resultType="java.util.HashMap">
+        SELECT ps, COUNT(*) AS count
+        FROM jxgl_teacher
+        GROUP BY ps
+    </select>
+<!--    课程种类统计（饼图）-->
+    <select id="selectJxglCourseList" resultType="java.util.HashMap">
+        SELECT cname, COUNT(*) AS count
+        FROM jxgl_course
+        GROUP BY cname
+    </select>
+
+<!--   #学生年级分布（柱状图） -->
+    <select id="selectJxglClassList" resultType="java.util.HashMap">
+        SELECT sclass, COUNT(*) AS count
+        FROM jxgl_student
+        GROUP BY sclass
+    </select>
+<!-- #课程开课频率排行（柱状图） -->
+    <select id="selectJxglpinlvList" resultType="java.util.HashMap">
+        SELECT
+            t.cno,
+            c.cname,
+            COUNT(*) AS open_times
+        FROM
+            jxgl_teaching t
+                JOIN
+            jxgl_course c ON t.cno = c.cno
+        GROUP BY
+            t.cno, c.cname
+        ORDER BY
+            open_times DESC
+        LIMIT 10
+    </select>
+<!--   #成绩分布图（折线图） -->
+    <select id="selectJxglScoreList" resultType="java.util.HashMap">
+        SELECT
+            CASE
+                WHEN score >= 90 THEN '90及以上'
+                WHEN score >= 80 THEN '80-89'
+                WHEN score >= 70 THEN '70-79'
+                WHEN score >= 60 THEN '60-69'
+                ELSE '60以下'
+                END AS score_range,
+            COUNT(*) AS count
+        FROM jxgl_sc
+        GROUP BY score_range
+    </select>
+<!--  #挂科率统计（折线图） -->
+    <select id="selectJxglGuaKeList" resultType="java.util.HashMap">
+        SELECT
+        t.cterm,
+        ROUND(SUM(CASE WHEN sc.score &lt; 60 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS fail_rate
+        FROM
+        jxgl_sc sc
+        JOIN
+        jxgl_teaching t ON sc.cno = t.cno
+        GROUP BY
+        t.cterm
+    </select>
+<!--    教学任务完成率分析 横向-->
+    <select id="selectJxglWorkList" resultType="java.util.HashMap">
+        SELECT
+            t.cterm AS term,
+            t.cno AS course_no,
+            c.cname AS course_name,
+            ROUND(COUNT(sc.sno) * 100.0 / t.period, 2) AS completion_rate
+        FROM
+            jxgl_teaching t
+                LEFT JOIN
+            jxgl_sc sc ON t.sid = sc.tid
+                JOIN
+            jxgl_course c ON t.cno = c.cno
+        GROUP BY
+            t.cterm, t.cno, c.cname, t.period
+        ORDER BY
+            t.cterm, completion_rate DESC
+    </select>
+<!--    #成绩排名前50 表格-->
+    <select id="selectJxglScoreTop50List" resultType="java.util.HashMap">
+        SELECT
+            sc.sno AS student_no,
+            s.sname AS student_name,
+            s.sclass AS student_class,
+            SUM(sc.point) AS total_points
+        FROM
+            jxgl_sc sc
+                JOIN
+            jxgl_student s ON sc.sno = s.sno
+        GROUP BY
+            sc.sno, s.sname, s.sclass
+        ORDER BY
+            total_points DESC
+        LIMIT 50
+    </select>
+    <!--    异常课程统计 横向-->
+    <select id="selectJxglYiChangList" resultType="java.util.HashMap">
+        SELECT
+        t.cterm,
+        c.cname,
+        COUNT(sc.sno) AS student_count,
+        ROUND(SUM(CASE WHEN sc.score &lt; 60 THEN 1 ELSE 0 END) * 100.0 / COUNT(sc.sno), 2) AS fail_rate
+        FROM
+        jxgl_sc sc
+        JOIN
+        jxgl_teaching t ON sc.tid = t.sid -- 修改此处为 sid
+        JOIN
+        jxgl_course c ON t.cno = c.cno
+        GROUP BY
+        t.cterm, c.cname
+        HAVING
+        student_count &lt; 5 OR fail_rate > 50
+    </select>
+    <!--    #教学任务量排名前20  表格-->
+
+    <select id="selectJxglWorkTop20List" resultType="java.util.HashMap">
+        SELECT
+            t2.tno AS teacher_no,
+            t.tname AS teacher_name,
+            SUM(t2.period) AS workload
+        FROM
+            jxgl_teaching t2
+                JOIN
+            jxgl_teacher t ON t2.tno = t.tno
+        GROUP BY
+            t2.tno, t.tname
+        ORDER BY
+            workload DESC
     </select>
 
 </mapper>

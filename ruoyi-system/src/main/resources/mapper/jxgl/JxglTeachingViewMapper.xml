@@ -38,6 +38,11 @@
         </where>
     </select>
 
+    <select id="selectJxglTeachingViewById" parameterType="Long" resultMap="JxglTeachingViewResult">
+        <include refid="selectJxglTeachingViewVo"/>
+        where a.sid = #{id}
+    </select>
+
     <select id="selectJxglTeachingViewBySid" parameterType="Long" resultMap="JxglTeachingViewResult">
         <include refid="selectJxglTeachingViewVo"/>
         where a.sid = #{sid}

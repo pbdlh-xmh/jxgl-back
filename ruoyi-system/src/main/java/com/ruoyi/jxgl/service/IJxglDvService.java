@@ -18,8 +18,18 @@ public interface IJxglDvService
 
     List<JxglDvCtermScNum> selectJxglDvCtermScNumList(Map<String, String> map);
 
-    List<JxglDvCtermScNum> selectJxglDvAeParcentList(Map<String, String> map);
+    List<Map<String,String>> selectJxglDvAeParcentList();
     List<JxglDvTeachingParcent> selectJxglDvTeachingParcentList();
     List<Map<String,String>> selectJxglDvTheTermInfoList(int theTerm);
     List<Map<String,String>>  selectJxglStudentPointList();
+    List<Map<String,String>> selectJxglPsList();
+    List<Map<String,String>> selectJxglCourseList();
+    List<Map<String,String>> selectJxglClassList();
+    List<Map<String,String>> selectJxglpinlvList();
+    List<Map<String,String>> selectJxglScoreList();
+    List<Map<String,String>> selectJxglGuaKeList();
+    List<Map<String,String>> selectJxglWorkList();
+    List<Map<String,String>> selectJxglScoreTop50List();
+    List<Map<String,String>> selectJxglYiChangList();
+    List<Map<String,String>> selectJxglWorkTop20List();
 }

@@ -39,8 +39,8 @@ public class JxglDvServiceImpl implements IJxglDvService{
     }
 
     @Override
-    public List<JxglDvCtermScNum> selectJxglDvAeParcentList(Map<String, String> map) {
-        return jxglDvMapper.selectJxglDvAeParcentList(map);
+    public List<Map<String,String>> selectJxglDvAeParcentList() {
+        return jxglDvMapper.selectJxglDvAeParcentList();
     }
 
     @Override
@@ -56,5 +56,55 @@ public class JxglDvServiceImpl implements IJxglDvService{
     @Override
     public List<Map<String, String>> selectJxglStudentPointList() {
         return jxglDvMapper.selectJxglStudentPointList();
+    }
+
+    @Override
+    public List<Map<String, String>> selectJxglPsList() {
+        return jxglDvMapper.selectJxglPsList();
+    }
+
+    @Override
+    public List<Map<String, String>> selectJxglCourseList() {
+        return jxglDvMapper.selectJxglCourseList();
+    }
+
+    @Override
+    public List<Map<String, String>> selectJxglClassList() {
+        return jxglDvMapper.selectJxglClassList();
+    }
+
+    @Override
+    public List<Map<String, String>> selectJxglpinlvList() {
+        return jxglDvMapper.selectJxglpinlvList();
+    }
+
+    @Override
+    public List<Map<String, String>> selectJxglScoreList() {
+        return jxglDvMapper.selectJxglScoreList();
+    }
+
+    @Override
+    public List<Map<String, String>> selectJxglGuaKeList() {
+        return jxglDvMapper.selectJxglGuaKeList();
+    }
+
+    @Override
+    public List<Map<String, String>> selectJxglWorkList() {
+        return jxglDvMapper.selectJxglWorkList();
+    }
+
+    @Override
+    public List<Map<String, String>> selectJxglScoreTop50List() {
+        return jxglDvMapper.selectJxglScoreTop50List();
+    }
+
+    @Override
+    public List<Map<String, String>> selectJxglYiChangList() {
+        return jxglDvMapper.selectJxglYiChangList();
+    }
+
+    @Override
+    public List<Map<String, String>> selectJxglWorkTop20List() {
+        return jxglDvMapper.selectJxglWorkTop20List();
     }
 }

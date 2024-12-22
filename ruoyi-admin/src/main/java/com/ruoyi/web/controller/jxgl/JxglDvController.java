@@ -47,8 +47,8 @@ public class JxglDvController extends BaseController
      * @return
      */
     @GetMapping("/sdept")
-    public AjaxResult getSdept(){
-        return AjaxResult.success(jxglDvService.selectJxglDvSdeptParcentList());
+    public TableDataInfo getSdept(){
+        return getDataTable(jxglDvService.selectJxglDvSdeptParcentList());
     }
 
     @GetMapping("/scNum")
@@ -60,15 +60,15 @@ public class JxglDvController extends BaseController
 
 
     @GetMapping("/aeParcent")
-    public TableDataInfo getAeParcent(@RequestParam Map<String,String> map){
-        List<JxglDvCtermScNum> list = jxglDvService.selectJxglDvAeParcentList(map);
+    public TableDataInfo getAeParcent(){
+        List<Map<String,String>> list = jxglDvService.selectJxglDvAeParcentList();
         return getDataTable(list);
     }
 
     @GetMapping("/teaching")
-    public TableDataInfo getTeaching(){
+    public AjaxResult getTeaching(){
         List<JxglDvTeachingParcent> list = jxglDvService.selectJxglDvTeachingParcentList();
-        return getDataTable(list);
+        return AjaxResult.success(list);
     }
 
     @GetMapping("/theTermInfo/{theTerm}")
@@ -82,6 +82,102 @@ public class JxglDvController extends BaseController
         List<Map<String,String>> list = jxglDvService.selectJxglStudentPointList();
         return getDataTable(list);
     }
+
+    /**
+     *  ##教师职称比例（饼图）
+     * @return
+     */
+    @GetMapping("/ps")
+    public TableDataInfo getPsList(){
+        List<Map<String,String>> list = jxglDvService.selectJxglPsList();
+        return getDataTable(list);
+    }
+
+    /**
+     *课程种类统计（饼图）-
+     * @return
+     */
+    @GetMapping("/course")
+    public TableDataInfo getCourseList(){
+        List<Map<String,String>> list = jxglDvService.selectJxglCourseList();
+        return getDataTable(list);
+    }
+
+    /**
+     *#学生年级分布（柱状图）
+     * @return
+     */
+    @GetMapping("/sruClass")
+    public TableDataInfo getClassList(){
+        List<Map<String,String>> list = jxglDvService.selectJxglClassList();
+        return getDataTable(list);
+    }
+    /**
+     *#课程开课频率排行（柱状图）
+     * @return
+     */
+    @GetMapping("/pinlv")
+    public TableDataInfo getpinlvList(){
+        List<Map<String,String>> list = jxglDvService.selectJxglpinlvList();
+        return getDataTable(list);
+    }
+    /**
+     * #成绩分布图（折线图）
+     * @return
+     */
+    @GetMapping("/score")
+    public TableDataInfo getScoreList(){
+        List<Map<String,String>> list = jxglDvService.selectJxglScoreList();
+        return getDataTable(list);
+    }
+    /**
+     * #挂科率统计（折线图）
+     * @return
+     */
+    @GetMapping("/guake")
+    public TableDataInfo getGuaKeList(){
+        List<Map<String,String>> list = jxglDvService.selectJxglGuaKeList();
+        return getDataTable(list);
+    }
+    /**
+     *教学任务完成率分析 横向
+     * @return
+     */
+    @GetMapping("/work")
+    public TableDataInfo getWorkList(){
+        List<Map<String,String>> list = jxglDvService.selectJxglWorkList();
+        return getDataTable(list);
+    }
+    /**
+     *#成绩排名前50 表格
+     * @return
+     */
+    @GetMapping("/score50")
+    public TableDataInfo getScoreTop50List(){
+        List<Map<String,String>> list = jxglDvService.selectJxglScoreTop50List();
+        return getDataTable(list);
+    }
+    /**
+     *异常课程统计 横向
+     * @return
+     */
+    @GetMapping("/errorWork")
+    public TableDataInfo getYiChangList(){
+        List<Map<String,String>> list = jxglDvService.selectJxglYiChangList();
+        return getDataTable(list);
+    }
+    /**
+     * #教学任务量排名前20  表格
+     * @return
+     */
+    @GetMapping("/work20")
+    public TableDataInfo getWorkTop20List(){
+        List<Map<String,String>> list = jxglDvService.selectJxglWorkTop20List();
+        return getDataTable(list);
+    }
+
+
+
 
 
 
